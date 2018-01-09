@@ -26,6 +26,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     }
   }, {
-    tableName: 'Parametro', timestamp: false
+    tableName: 'Parametro', timestamps: false
   });
 };
