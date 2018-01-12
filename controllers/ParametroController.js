@@ -71,3 +71,60 @@ exports.create = function(req, res){
         return res.status(400).json({ msg: 'Request inválido' });
     }
 }
+
+exports.deleteById = function(req, res){
+
+    const body = req.params.id;
+
+    if(req.params !== "" || req.params!==undefined){
+
+        const conexion = conexionbd.getConexion(models, 'Children');    
+        const { Parametros, sequelize }  = conexion;
+
+        return sequelize.transaction(function (t) {
+
+            return Parametros.update({    
+                estado: 'I',
+                },{ 
+                    where: {id: req.params.id}
+                }, {transaction: t})
+
+        }).then(function () {
+            return res.status(200).json({msg: 'Parametro #:'+req.params.id+" eliminado con exito"})
+        }).catch((err) => {
+            console.log(err);
+            return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
+        });
+
+    }else{
+        return res.status(400).json({ msg: 'Request inválido' });
+    }
+}
+
+exports.getById = function(req, res){
+
+    let params = req.query;
+    console.log(req.params)
+    if(params){
+        const conexion = conexionbd.getConexion(models, 'Children');    
+        const { Parametros }  = conexion;
+
+        var fecha = "";
+
+        Parametros.findOne({where:{id: req.params.id} })
+        .then((parametros) =>{
+
+                fecha = (parametros.dataValues.fecha_creacion)? new Date(parametros.dataValues.fecha_creacion).toISOString().substring(0,10): undefined;
+                parametros.dataValues.fecha_creacion = formats.convertirFecha(fecha, 'yyyy-mm-dd', 'dd/mm/yyyy'); 
+
+            return res.status(200).json(parametros)
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
+        });
+
+    }else{
+        return res.status(400).json({ msg: 'Request inválido' });
+    }
+}

@@ -24,7 +24,11 @@ module.exports = function(sequelize, DataTypes) {
     estado: {
       type: DataTypes.CHAR,
       allowNull: true
-    }
+    },
+    dependencia: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
   }, {
     tableName: 'Parametro', timestamps: false
   });
