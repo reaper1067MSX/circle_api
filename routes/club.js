@@ -4,7 +4,8 @@ var ClubController = require('../controllers/ClubController');
 
 router.get('/', ClubController.getAll);
 router.post('/', ClubController.create);
-router.patch('/:id/', ClubController.update);
-router.delete('/:id/', ClubController.deleteByID);
+router.patch('/:id', ClubController.update);
+router.get('/:id', ClubController.getById);
+router.delete('/:id', ClubController.deleteByID);
 
 module.exports = router;
