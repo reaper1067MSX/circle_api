@@ -11,27 +11,118 @@ exports.getAll = function(req, res){
         var campos;
         
         const conexion = conexionbd.getConexion(models, 'Children');    
-        const { Club }  = conexion;
+        const { sequelize }  = conexion;
+        return sequelize.query("sp_ListarClubs_getall")//Modify
+        .spread(clubs =>{
 
-        if(req.query.estado){
-            param_query = {estado: 'A'}
-            campos = [['id', 'Codigo'], ['fecha_creacion', 'Fecha'], ['nombre', 'Nombre'], 
-            ['estado', 'Estado'], ['objetivo_Estrategico', 'Objetivo'], ['programa', 'Programa'],
-            ['observacion', 'Observacion'] ];
-        }
-
-        Club.findAll({attributes: campos, where: param_query  })
-        .then((club) => {
-            var fecha_creacion;
-
-            club.forEach((club) => {
-                fecha_creacion = (club.dataValues.Fecha)? new Date(club.dataValues.Fecha).toISOString().substring(0,10): undefined;
-                club.dataValues.Fecha = formats.convertirFecha(fecha_creacion, 'yyyy-mm-dd', 'dd/mm/yyyy');
-            });
-            
-            return res.status(200).json(club);
+                //Format Fecha
+                clubs.forEach((arr)=>{
+                    var fecha = '';
+                    fecha = (arr.fecha_creacion)? new Date(arr.fecha_creacion).toISOString().substring(0,10): undefined;
+                    arr.fecha_creacion = formats.convertirFecha(fecha, 'yyyy-mm-dd', 'dd/mm/yyyy'); 
+                })
+                return res.status(200).json(clubs);
         })        
         .catch((err) => {
+            console.log(err);
+            return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
+        });
+
+    }else{
+        return res.status(400).json({ msg: 'Request inválido' });
+    }
+}
+
+exports.deleteByID = function(req, res){
+    const body = req.params.id;
+
+    if(req.params !== "" || req.params!==undefined){
+
+        const conexion = conexionbd.getConexion(models, 'Children');    
+        const { Club, sequelize }  = conexion;
+
+        return sequelize.transaction(function (t) {
+
+            return Club.update({    
+                estado: 'I',
+                },{ 
+                    where: {id: req.params.id}
+                }, {transaction: t})
+
+        }).then(()=> {
+            return res.status(200).json({msg: 'Club #: '+req.params.id+" eliminado con exito"})
+        }).catch((err) => {
+            console.log(err);
+            return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
+        });
+
+    }else{
+        return res.status(400).json({ msg: 'Request inválido' });
+    }
+}
+
+exports.create = function(req, res){
+    const body = req.body;
+
+    if(req.body){
+
+        const conexion = conexionbd.getConexion(models, 'Children');    
+        const { Club, sequelize }  = conexion;
+        console.log(body);
+        return sequelize.transaction(function (t) {
+
+            //COMPROBAR CODIGO NO REPETIDO SI ESTA REPETIDO MANDA MENSAJE PARA CAMBIAR
+
+            return Club.create({
+                id: body.codigo,
+                fecha_creacion: formats.convertirFecha(body.fecha_creacion, "dd/mm/yyyy", "yyyy-mm-dd") ,
+                nombre: body.nombre,
+                estado: body.estado_sel,
+                objetivo_Estrategico: body.objEspec_sel,
+                programa: body.programa_sel,
+                observacion: body.observacion,
+            })
+
+        }).then(function () {
+            return res.status(200).json({msg: 'Proceso OK'})
+        }).catch((err) => {
+            console.log(err);
+            return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
+        });
+
+    }else{
+        return res.status(400).json({ msg: 'Request inválido' });
+    }
+}
+
+exports.update = function(req, res){
+    const body = req.body;
+
+    if(req.body){
+
+        const conexion = conexionbd.getConexion(models, 'Children');    
+        const { Club, sequelize }  = conexion;
+        console.log(body);
+        return sequelize.transaction(function (t) {
+
+            //COMPROBAR CODIGO NO REPETIDO SI ESTA REPETIDO MANDA MENSAJE PARA CAMBIAR
+
+            return Club.update({
+                //id: body.codigo,
+                fecha_creacion: formats.convertirFecha(body.fecha_creacion, "dd/mm/yyyy", "yyyy-mm-dd") ,
+                nombre: body.nombre,
+                estado: body.estado_sel,
+                objetivo_Estrategico: body.objEspec_sel,
+                programa: body.programa_sel,
+                observacion: body.observacion,
+            },{ 
+                where: {id: body.codigo}
+            }, {transaction: t})
+
+
+        }).then(function () {
+            return res.status(200).json({msg: 'Proceso OK'})
+        }).catch((err) => {
             console.log(err);
             return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
         });
