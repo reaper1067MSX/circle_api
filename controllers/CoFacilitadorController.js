@@ -118,3 +118,76 @@ exports.create = function(req, res){
 }
 
 
+exports.update = function(req, res){
+    const body = req.body;
+
+    if(req.body){
+
+        const conexion = conexionbd.getConexion(models, 'Children');    
+        const { Co_Facilitador, sequelize }  = conexion;
+        console.log(body);
+        return sequelize.transaction(function (t) {
+
+            //COMPROBAR CODIGO NO REPETIDO SI ESTA REPETIDO MANDA MENSAJE PARA CAMBIAR
+
+            return Co_Facilitador.update({
+                //cedula: body.cedula,
+                cod_apadrinado: body.codigo,
+                localidad: body.localidad,
+                nombre: body.nombres,
+                apellido: body.apellidos,
+                fecha_nacimiento: formats.convertirFecha(body.fecha_nacimiento, "dd/mm/yyyy", "yyyy-mm-dd") ,
+                estado: body.options_estado_sel,
+                observaciones: body.observacion,
+                motivo: body.motivo,
+                fecha_inscripcion: formats.convertirFecha(body.fecha_creacion, "dd/mm/yyyy", "yyyy-mm-dd") ,
+                
+                },{ 
+                    where: {cedula: body.cedula}
+                }, {transaction: t})
+
+        }).then(function () {
+            return res.status(200).json({msg: 'Proceso OK'})
+        }).catch((err) => {
+            console.log(err);
+            return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
+        });
+
+    }else{
+        return res.status(400).json({ msg: 'Request inválido' });
+    }
+}
+
+
+exports.getById = function(req, res){
+
+    let params = req.query;
+    console.log(req.params)
+    if(params){
+        const conexion = conexionbd.getConexion(models, 'Children');    
+        const { Co_Facilitador }  = conexion;
+
+        var fecha = "";
+        var fecha2 = "";
+
+        Co_Facilitador.findOne({where:{cedula: req.params.id} })
+        .then((cofacilitadores) =>{
+                
+                fecha = (cofacilitadores.dataValues.fecha_nacimiento)? new Date(cofacilitadores.dataValues.fecha_nacimiento).toISOString().substring(0,10): undefined;
+                cofacilitadores.dataValues.fecha_nac = formats.convertirFecha(fecha, 'yyyy-mm-dd', 'dd/mm/yyyy');
+
+                fecha2 = (cofacilitadores.dataValues.fecha_inscripcion)? new Date(cofacilitadores.dataValues.fecha_inscripcion).toISOString().substring(0,10): undefined;
+                cofacilitadores.dataValues.fecha_inscripcion = formats.convertirFecha(fecha2, 'yyyy-mm-dd', 'dd/mm/yyyy');
+                
+                cofacilitadores.dataValues.nombre = (cofacilitadores.dataValues.nombre)?cofacilitadores.dataValues.nombre:'';
+            return res.status(200).json(cofacilitadores)
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
+        });
+
+    }else{
+        return res.status(400).json({ msg: 'Request inválido' });
+    }
+}
