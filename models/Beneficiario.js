@@ -64,6 +64,10 @@ module.exports = function(sequelize, DataTypes) {
     direccion: {
       type: DataTypes.STRING,
       allowNull: true
+    },
+    cod_apadrinado: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   }, {
     tableName: 'Beneficiario', timestamps: false

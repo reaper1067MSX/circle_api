@@ -131,3 +131,31 @@ exports.update = function(req, res){
         return res.status(400).json({ msg: 'Request inválido' });
     }
 }
+
+exports.getById = function(req, res){
+
+    let params = req.query;
+    console.log(req.params)
+    if(params){
+        const conexion = conexionbd.getConexion(models, 'Children');    
+        const { Club }  = conexion;
+
+        var fecha = "";
+
+        Club.findOne({where:{id: req.params.id} })
+        .then((club) =>{
+
+                 fecha = (club.dataValues.fecha_creacion)? new Date(club.dataValues.fecha_creacion).toISOString().substring(0,10): undefined;
+                 club.dataValues.fecha_creacion = formats.convertirFecha(fecha, 'yyyy-mm-dd', 'dd/mm/yyyy');
+
+            return res.status(200).json(club)
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
+        });
+
+    }else{
+        return res.status(400).json({ msg: 'Request inválido' });
+    }
+}
