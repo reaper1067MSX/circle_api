@@ -174,7 +174,7 @@ exports.getById = function(req, res){
         .then((cofacilitadores) =>{
                 
                 fecha = (cofacilitadores.dataValues.fecha_nacimiento)? new Date(cofacilitadores.dataValues.fecha_nacimiento).toISOString().substring(0,10): undefined;
-                cofacilitadores.dataValues.fecha_nac = formats.convertirFecha(fecha, 'yyyy-mm-dd', 'dd/mm/yyyy');
+                cofacilitadores.dataValues.fecha_nacimiento = formats.convertirFecha(fecha, 'yyyy-mm-dd', 'dd/mm/yyyy');
 
                 fecha2 = (cofacilitadores.dataValues.fecha_inscripcion)? new Date(cofacilitadores.dataValues.fecha_inscripcion).toISOString().substring(0,10): undefined;
                 cofacilitadores.dataValues.fecha_inscripcion = formats.convertirFecha(fecha2, 'yyyy-mm-dd', 'dd/mm/yyyy');
