@@ -11,23 +11,37 @@ exports.getAll = function(req, res){
         var campos;
         
         const conexion = conexionbd.getConexion(models, 'Children');    
-        const { sequelize }  = conexion;
-        return sequelize.query("sp_ListarClubs_getall")//Modify
-        .spread(clubs =>{
+        const { sequelize, Club }  = conexion;
+        
+        console.log("PARAMETROS: ", parametros)
+        if(parametros.cadena_busq=== undefined){
+            return sequelize.query("sp_ListarClubs_getall")//Modify
+            .spread(clubs =>{
 
-                //Format Fecha
-                clubs.forEach((arr)=>{
-                    var fecha = '';
-                    fecha = (arr.fecha_creacion)? new Date(arr.fecha_creacion).toISOString().substring(0,10): undefined;
-                    arr.fecha_creacion = formats.convertirFecha(fecha, 'yyyy-mm-dd', 'dd/mm/yyyy'); 
-                })
-                return res.status(200).json(clubs);
-        })        
-        .catch((err) => {
-            console.log(err);
-            return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
-        });
+                    //Format Fecha
+                    clubs.forEach((arr)=>{
+                        var fecha = '';
+                        fecha = (arr.fecha_creacion)? new Date(arr.fecha_creacion).toISOString().substring(0,10): undefined;
+                        arr.fecha_creacion = formats.convertirFecha(fecha, 'yyyy-mm-dd', 'dd/mm/yyyy'); 
+                    })
+                    return res.status(200).json(clubs);
+            })        
+            .catch((err) => {
+                console.log(err);
+                return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
+            });
+        }else{
+            
+            param_query.$or = [ {id: {$like: `%${parametros.cadena_busq}%`}}, { nombre: {$like: `%${parametros.cadena_busq}%`}}];
+            campos = [['id', 'Codigo'], ['nombre', 'Descripcion']];    
+            nrocampos = 20; 
 
+            Club.findAll({attributes: campos, where: param_query, limit: nrocampos})
+            .then((club) => res.status(200).json(club))
+            .catch((err) =>{
+                return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
+            }); 
+        }
     }else{
         return res.status(400).json({ msg: 'Request inválido' });
     }
