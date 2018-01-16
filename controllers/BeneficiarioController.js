@@ -20,12 +20,12 @@ exports.getAll = function(req, res){
         if(req.query.estado){
             param_query = {estado: 'A'}
         }
-
+        
         Beneficiario.findAll({attributes: campos, where: param_query  })
         .then((beneficiario) => {
             
             beneficiario.forEach((DATA)=> {
-                var edad, anio , actual, anio_actual;
+                var edad , actual;
                 edad =  (DATA.dataValues.Edad)? new Date(DATA.dataValues.Edad).toISOString().substring(0,4): undefined;
                 actual = new Date(gen_fechas.gen_FechaSistema()).toISOString().substring(0,4)
                 DATA.dataValues.Edad = parseInt(actual) - parseInt(edad);
