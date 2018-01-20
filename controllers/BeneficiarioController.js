@@ -14,6 +14,8 @@ exports.getAll = function(req, res){
         const conexion = conexionbd.getConexion(models, 'Children');    
         const { Beneficiario }  = conexion;
 
+        if(parametros.cadena_busq=== undefined){
+
         campos = [['cedula', 'Cedula'], ['nombre', 'Nombre'], ['apellido', 'Apellido'],
                  ['fecha_nac', 'Edad'], ['estado', 'Estado']];
 
@@ -37,6 +39,20 @@ exports.getAll = function(req, res){
             console.log(err);
             return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
         });
+
+        }else{
+                
+            param_query.$or = [ {cedula: {$like: `%${parametros.cadena_busq}%`}}, { apellido: {$like: `%${parametros.cadena_busq}%`}}];
+            campos = [['cedula', 'Codigo'], ['apellido', 'Descripcion']];    
+            nrocampos = 20; 
+
+            Beneficiario.findAll({attributes: campos, where: param_query, limit: nrocampos})
+            .then((beneficiario) => res.status(200).json(beneficiario))
+            .catch((err) =>{
+                return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
+            }); 
+        }
+
 
     }else{
         return res.status(400).json({ msg: 'Request inválido' });

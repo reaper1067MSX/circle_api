@@ -15,6 +15,8 @@ exports.getAll = function(req, res){
 
         console.log('PARAMS: ', req.query)
 
+        if(parametros.cadena_busq=== undefined){
+
         if(req.query.estado){
             param_query = {estado: {$in: [req.query.estado[0],req.query.estado[1]]}}
             campos = [['cedula', 'Codigo'], ['nombre', 'Nombre'], ['apellido', 'Apellido'],
@@ -40,6 +42,20 @@ exports.getAll = function(req, res){
             console.log(err);
             return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
         });
+
+    }else{
+                
+        param_query.$or = [ {cedula: {$like: `%${parametros.cadena_busq}%`}}, { apellido: {$like: `%${parametros.cadena_busq}%`}}];
+        campos = [['cedula', 'Codigo'], ['apellido', 'Descripcion']];    
+        nrocampos = 20; 
+
+        Co_Facilitador.findAll({attributes: campos, where: param_query, limit: nrocampos})
+        .then((cofacilitadores) => res.status(200).json(cofacilitadores))
+        .catch((err) =>{
+            return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
+        }); 
+    }
+
 
     }else{
         return res.status(400).json({ msg: 'Request inválido' });
