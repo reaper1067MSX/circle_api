@@ -36,8 +36,6 @@ exports.getAll = function(req, res){
     }
 }
 
-
-
 exports.deleteById = function(req, res){
 
         const body = req.params.id;
