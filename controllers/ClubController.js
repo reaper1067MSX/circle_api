@@ -60,7 +60,7 @@ exports.deleteByID = function(req, res){
             return Club.update({    
                 estado: 'I',
                 },{ 
-                    where: {id: req.params.id}
+                    where: {id: req.params.id }
                 }, {transaction: t})
 
         }).then(()=> {

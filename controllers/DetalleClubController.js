@@ -87,3 +87,29 @@ exports.getAll = function(req, res){
         return res.status(400).json({ msg: 'Request inválido' });
     }
 }
+
+exports.deleteByID = function(req, res){
+    const params = req.params;
+
+    if(req.params !== "" || req.params!==undefined){
+        const conexion = conexionbd.getConexion(models, 'Children');    
+        const { Club_Detalle, sequelize }  = conexion;
+
+        return sequelize.transaction(function (t) {
+
+            return Club_Detalle.update({    
+                estado: 'I',
+                },{ 
+                    where: {$and: [{id: params.id} ,{ punto_satelite: params.ps }, {secuencia: params.sc}, {dia: params.di}]}
+                }, {transaction: t})
+
+        }).then(()=> {
+            return res.status(200).json({msg: 'Asignacion #: '+req.params.id+" eliminada con exito"})
+        }).catch((err) => {
+            console.log(err);
+            return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
+        });
+    }else{
+        return res.status(400).json({ msg: 'Request inválido' });
+    }
+}
