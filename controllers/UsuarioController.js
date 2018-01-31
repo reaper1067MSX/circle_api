@@ -15,6 +15,7 @@ exports.getById = function(req, res){
 
         Usuario.findOne({where: {id:username}})
         .then((usuario) => {
+
             if (!usuario) {
                 return res.status(200).json({ msg: 'Acceso No Autorizado: Usuario no válido' });
             }

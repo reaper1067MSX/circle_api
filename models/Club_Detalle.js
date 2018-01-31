@@ -41,6 +41,10 @@ module.exports = function(sequelize, DataTypes) {
     fecha_creacion: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    cod_cofacilitador: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   }, {
     tableName: 'Club_Detalle', timestamps: false

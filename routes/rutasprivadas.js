@@ -10,6 +10,7 @@ var club = require('./club');
 var cofacilitadores = require('./cofacilitadores');
 var puntosatelite = require('./puntosatelite');
 var inscripciones = require('./inscripciones');
+var clubsasignados = require('./clubsasignados');
 
 router.use('/asignaciones', asignaciones);
 router.use('/parametros', parametros);
@@ -19,6 +20,7 @@ router.use('/club', club);
 router.use('/cofacilitadores', cofacilitadores);
 router.use('/puntosatelite', puntosatelite);
 router.use('/inscripciones', inscripciones);
+router.use('/clubsasignados', clubsasignados);
 //router.get('/parametros/:usuario/:perfilid', AuthController.getParametros)
 
 module.exports = router;

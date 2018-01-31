@@ -24,11 +24,8 @@ exports.login = function(req, res, next){
             if (!usuario) {
                 return res.status(401).json({ msg: 'Acceso No Autorizado: Usuario no válido' });
             }
-        
             if (bcrypt.compareSync(clave, usuario.clave)){
-
-                try{
-                    
+                try{    
                     return Cargo.findOne({
                         where: {id:usuario.cargo}
                     }).then((cargo) => {
@@ -45,7 +42,6 @@ exports.login = function(req, res, next){
                 }catch(error){
                     return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + error });
                 }
-                
             }else{
                 return res.status(401).json({ msg: 'Acceso No Autorizado: Clave incorrecta' });
             }                       
