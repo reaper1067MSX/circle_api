@@ -85,7 +85,7 @@ exports.create = function(req, res){
                 tipo: body.options_tipo_sel,
                 fecha_creacion: formats.convertirFecha(body.fecha_creacion, "dd/mm/yyyy", "yyyy-mm-dd") ,
                 estado: body.options_estado_sel,
-                dependencia: (body.options_depen!==null || body.options_depen!==undefined?body.options_depen:null)
+                dependencia: (body.options_depen_sel!==null || body.options_depen_sel!==undefined?body.options_depen_sel:null)
             })
 
         }).then(function () {
