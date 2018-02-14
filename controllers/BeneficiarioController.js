@@ -122,7 +122,7 @@ exports.create = function(req, res){
             return res.status(200).json({msg: 'Proceso OK'})
         }).catch((err) => {
             console.log(err);
-            return res.status(500).json({ msg: 'Error Interno en el Servidor: ' + err });
+            return res.status(500).json({ msg: 'Cédula o usuario ya registrado: ' + err });
         });
 
     }else{
